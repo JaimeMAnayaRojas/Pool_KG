@@ -15,17 +15,62 @@ using KernelDensity
 # load my functions
 include("Functions.jl")
 readdir("outputs")
-post_SurvG = CSV.read("outputs/Post_Survival_G.csv", DataFrame)# Statistical analyses
-post_GrowthG = CSV.read("outputs/Post_Growth_G.csv", DataFrame)# Statistical analyses
-post_ReprG = CSV.read("outputs/Post_Repr_G.csv", DataFrame)# Statistical analyses
+post_SurvG = CSV.read("outputs/Post_Survival_G.csv", DataFrame)[:,2:end]# Statistical analyses
+post_GrowthG = CSV.read("outputs/Post_Growth_G.csv", DataFrame)[:,2:end]# Statistical analyses
+post_ReprG = CSV.read("outputs/Post_Repr_G.csv", DataFrame)[:,2:end]# Statistical analyses
 
-post_SurvK = CSV.read("outputs/Post_Survival_K.csv", DataFrame)# Statistical analyses
-post_GrowthK = CSV.read("outputs/Post_Growth_K.csv", DataFrame)# Statistical analyses
-post_ReprK = CSV.read("outputs/Post_Repr_K.csv", DataFrame)# Statistical analyses
+
+# summary tables
+
+CSV.write("outputs/Sum_SurvG.csv", Post_summary(post_SurvG))
+
+# How much increaseing fish biomass changes survival?
+
+names(post_SurvG)
+
+100 * HDI(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom) .- My_Logistic.(post_SurvG.b_Intercept))
+mean(My_Logistic.(post_SurvG.b_Intercept))
+100 * HDI(My_Logistic.(post_SurvG.b_Intercept))
+
+100 *mean(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom))
+100 * HDI(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom))
+
+
+
+
+CSV.write("outputs/Sum_GrowthG.csv", Post_summary(post_GrowthG))
+
+
+a = 18 .* exp.(post_GrowthG.b_Intercept) .- 18
+b =  18 .* exp.(post_GrowthG.b_Intercept .+ post_GrowthG.b_Density) .- 18
+mean(b - a)
+HDI(b - a)
+
+
+a = 18 .* exp.(post_GrowthG.b_Intercept) .- 18
+b =  18 .* exp.(post_GrowthG.b_Intercept .+ post_GrowthG.b_canopy) .- 18
+mean(b - a)
+HDI(b - a)
+
+
+
+CSV.write("outputs/Sum_FecuG.csv", Post_summary(post_ReprG))
+
+
+
+
+post_SurvK = CSV.read("outputs/Post_Survival_K.csv", DataFrame)[:,2:end]# Statistical analyses
+post_GrowthK = CSV.read("outputs/Post_Growth_K.csv", DataFrame)[:,2:end]# Statistical analyses
+post_ReprK = CSV.read("outputs/Post_Repr_K.csv", DataFrame)[:,2:end]# Statistical analyses
+
+CSV.write("outputs/Sum_SurvK.csv", Post_summary(post_SurvK))
+CSV.write("outputs/Sum_GrowthK.csv", Post_summary(post_GrowthK))
+CSV.write("outputs/Sum_FecuK.csv", Post_summary(post_ReprK))
 
 
 readdir("data")
 DataG = CSV.read("data/GuppyIPM.csv", DataFrame);
+
 DataK = CSV.read("data/KillifishIPM.csv", DataFrame);
 
 
@@ -53,7 +98,7 @@ ylabel!("Frequency (N)")
 ########333
 
 
-function p_link(df::AbstractDataFrame, z::AbstractVector, 
+function G_link(df::AbstractDataFrame, z::AbstractVector, 
     size_cen::AbstractFloat, NK::Integer, row::Integer)
     zc = z .- size_cen
     z2 = z.^2 .- size_cen.^2
@@ -111,10 +156,11 @@ end
 
 
 include("Figures_Guppy.jl")
-savefig("Figure-1.png")
-
+savefig("plots/Figure-1.svg")
+savefig("plots/Figure-1.png")
 
 
 include("Figures_Killifish.jl")
-savefig("Figure-2.png")
+savefig("plots/Figure-2.png")
+savefig("plots/Figure-2.svg")
 

@@ -7,34 +7,55 @@ KG = zeros(size(post_SurvG)[1], length(z));
 NK = zeros(size(post_SurvG)[1], length(z));
 
 
+
+function S_link(df::AbstractDataFrame, z::AbstractVector, 
+    size_cen::AbstractFloat, NK::Integer, row::Integer)
+    zc = z .- size_cen
+#    z2 = z.^2 .- size_cen.^2
+    α= df.b_Intercept[row]
+    βz= df.b_z[row]
+   # βz2= df.b_z2[row]
+    βNK= df."b_NK"[row]
+    βzNK= df."b_z.NK"[row]
+    μ = α .+ βNK .* NK .+  (βz .+ βzNK .* NK) .* zc  # linear predictor
+    return(μ)
+end
+
+
 for i in 1:size(post_SurvG)[1]
-    KG[i,:] =  (p_link(post_SurvG, z, size_cen, 0, i))
-    NK[i,:] =  (p_link(post_SurvG, z, size_cen, 1, i))
+    KG[i,:] =  (S_link(post_SurvG, z, size_cen, 0, i))
+    NK[i,:] =  (S_link(post_SurvG, z, size_cen, 1, i))
 end
 
 my_summary(KG)
 
 # Plot NG
-p = My_Logistic.(my_summary(KG)).*100
+p = My_Logistic.(my_summary(KG))
 Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
     linewidth = 5, label = "KG", title = "a)", titleloc = :left, legend = :bottomright    
 )
 
-p = My_Logistic.(my_summary(NK)).*100
+p = My_Logistic.(my_summary(NK))
 plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NK")
 #xlabel!("Initial size (mm)")
-ylabel!("Survival (%)")
-ylims!((0,100))
+ylabel!("Survival")
+ylims!((-0.01,1.01))
 xlims!(8,30)
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, label= :false)
 
     # estimation graphs
 
+
+
+
+scatter!(DataG.SL1_mm, DataG.surv , groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+
+
 lab= round(LOS(post_SurvG.b_NK), digits = 2)
 
 
 Fig_1A_α = plot(kde(post_SurvG.b_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
-title = "            Statistical test \n                NK > KG  \n $(lab)%", titleloc = :left, titlefontsize = 9)
+title = "            Statistical Test  \n   probability that NK > KG:  \n \n $(lab)%", titleloc = :left, titlefontsize = 9)
 plot!(kde(post_SurvG.b_Intercept .+ post_SurvG.b_NK), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
 xlabel!("Intercept")
 
@@ -88,8 +109,10 @@ ylabel!("Growth ln(z₁/z)")
 xlims!(8,30)
 
 
-DataG.growth = log.(DataG.SL2_mm ./ DataG.SL1_mm)
-scatter!(DataG.SL1_mm, DataG.growth, groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+df = filter(:Sex2 => x -> x != "M", subset(DataG, :Sex2 .=> ByRow(!ismissing)))
+
+df.growth = log.(df.SL2_mm ./ df.SL1_mm)
+scatter!(df.SL1_mm, df.growth, groups = df.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false)
 
     # estimation graphs
 
@@ -164,7 +187,7 @@ plot!([18,18], [0,100], linestyle = :dash, colour = :gray, legend = :false)
 
 ylabel!("Offspring (N)")
 
-scatter!(DataG.SL1_mm, DataG.Recr, groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+scatter!(df.SL1_mm, df.Recr, groups = df.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false)
 
 
 ylims!((-1,20))
@@ -205,6 +228,6 @@ FC = plot(Fig_3A, Fig_3A_α, Fig_3A_β,
 )
 
 
-plot(FA, FB, FC, layout = (3,1), size = (500, 700))
+plot(FA, FB, FC, layout = (3,1), size = (500, 700), leftmargin = 5mm, rightmargin = 5mm)
 
 

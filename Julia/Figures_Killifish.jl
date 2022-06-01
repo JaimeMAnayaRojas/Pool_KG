@@ -31,16 +31,19 @@ end
 my_summary(KG)
 
 # Plot NG
-p = My_Logistic.(my_summary(KG)).*100
+p = My_Logistic.(my_summary(KG))
 Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
     linewidth = 5, label = "KG", title = "a)", titleloc = :left, legend = :bottomright    
 )
 
-p = My_Logistic.(my_summary(NG)).*100
+p = My_Logistic.(my_summary(NG))
 plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NG")
 #xlabel!("Initial size (mm)")
-ylabel!("Survival (%)")
-ylims!((0,100))
+ylabel!("Survival")
+
+scatter!(DataK.SL1_mm, DataK.surv, groups = DataK.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+
+ylims!((-0.01,1.01))
 xlims!(5,95)
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, label= :false)
 
@@ -50,7 +53,7 @@ lab= round(LOS(post_SurvK.b_NG), digits = 2)
 
 
 Fig_1A_α = plot(kde(post_SurvK.b_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
-title = "            Statistical test \n                KG > NG  \n $(lab)%", titleloc = :left, titlefontsize = 9)
+title = "              Statistical Test  \n       probability that NG > KG:  \n \n $(lab)%", titleloc = :left, titlefontsize = 9)
 plot!(kde(post_SurvK.b_Intercept .+ post_SurvK.b_NG), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
 xlabel!("Intercept")
 
@@ -110,7 +113,10 @@ xlims!(5,95)
 
 
 DataK.growth = log.(DataK.SL2_mm ./ DataK.SL1_mm) 
-scatter!(DataK.SL1_mm, DataK.growth, groups = DataK.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+
+df = filter(:Sex2 => x -> x != "M", subset(DataK, :Sex2 .=> ByRow(!ismissing)))
+
+scatter!(df.SL1_mm, df.growth, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
 
 
 xlabel!("Killifish size (mm)")
@@ -125,11 +131,15 @@ Fig_2A_α = plot(kde(post_GrowthK.b_b0_Intercept), fillrange=-0, fillalpha=0.25,
 title = "\n $(lab)%", titlefontsize = 9, titleloc = :left)
 plot!(kde(post_GrowthK.b_b0_Intercept .+ post_GrowthK.b_b0_NG), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
 xlabel!("Intercept")
+plot!([0,0], [0,11], c=:red, linewidth=2)
+
 
 lab= round(LOS(post_GrowthK.b_bz1_NG), digits=2)
 Fig_2A_β = plot(kde(post_GrowthK.b_bz1_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
 title= "\n $(lab)%", titlefontsize = 9, titleloc = :left, ticks =:false)
 plot!(kde(post_GrowthK.b_bz1_Intercept .+ post_GrowthK.b_bz1_NG), fillrange=-0, fillalpha=0.25, legend= :false,  ticks =:false)
+plot!([0,0], [0,200], c=:red, linewidth=2)
+
 
 α = round(α, digits = 2)
 xlabel!("Slope 1")
@@ -139,6 +149,9 @@ lab= round(LOS(post_GrowthK.b_bz2_NG), digits=2)
 Fig_2A_c = plot(kde(post_GrowthK.b_bz2_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
 title= "\n $(lab)%", titlefontsize = 9, titleloc = :left, ticks =:false)
 plot!(kde(post_GrowthK.b_bz2_Intercept .+ post_GrowthK.b_bz2_NG), fillrange=-0, fillalpha=0.25, legend= :false,  ticks =:false)
+
+plot!([0,0], [0,700], c=:red, linewidth=2)
+
 
 α = round(α, digits = 2)
 xlabel!("Slope 2")
@@ -191,7 +204,7 @@ Fig_3A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median),
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, legend = :false)
 ylabel!("Offspring (N)")
 
-scatter!(DataK.SL1_mm, DataK.Recr, groups = DataK.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+scatter!(df.SL1_mm, df.Recr, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
 ylims!((-1,20))
 xlims!(5,90)
 
@@ -218,7 +231,7 @@ FC = plot(Fig_3A, Fig_3A_α, Fig_3A_β,
 )
 
 
-plot(FA, FB, FC, layout = (3,1), size = (500, 700))
+plot(FA, FB, FC, layout = (3,1), size = (500, 700),leftmargin = 5mm, rightmargin = 5mm)
 
 
 
