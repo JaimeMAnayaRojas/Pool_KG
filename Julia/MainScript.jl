@@ -22,55 +22,39 @@ post_ReprG = CSV.read("outputs/Post_Repr_G.csv", DataFrame)[:,2:end]# Statistica
 
 # summary tables
 
-CSV.write("outputs/Sum_SurvG.csv", Post_summary(post_SurvG))
+Sdf = Post_summary(post_SurvG)
+Sdf.Model .= "Survial"
 
-# How much increaseing fish biomass changes survival?
+Gdf = Post_summary(post_GrowthG)
+Gdf.Model .= "Growth"
 
-names(post_SurvG)
-
-100 * HDI(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom) .- My_Logistic.(post_SurvG.b_Intercept))
-mean(My_Logistic.(post_SurvG.b_Intercept))
-100 * HDI(My_Logistic.(post_SurvG.b_Intercept))
-
-100 *mean(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom))
-100 * HDI(My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_FishBiom))
+Fdf = Post_summary(post_ReprG)
+Fdf.Model .= "Fecundity"
 
 
-
-
-CSV.write("outputs/Sum_GrowthG.csv", Post_summary(post_GrowthG))
-
-
-a = 18 .* exp.(post_GrowthG.b_Intercept) .- 18
-b =  18 .* exp.(post_GrowthG.b_Intercept .+ post_GrowthG.b_Density) .- 18
-mean(b - a)
-HDI(b - a)
-
-
-a = 18 .* exp.(post_GrowthG.b_Intercept) .- 18
-b =  18 .* exp.(post_GrowthG.b_Intercept .+ post_GrowthG.b_canopy) .- 18
-mean(b - a)
-HDI(b - a)
-
-
-
-CSV.write("outputs/Sum_FecuG.csv", Post_summary(post_ReprG))
-
-
+CSV.write("outputs/Sum_ParG.csv", vcat(Sdf, Gdf, Fdf))
 
 
 post_SurvK = CSV.read("outputs/Post_Survival_K.csv", DataFrame)[:,2:end]# Statistical analyses
 post_GrowthK = CSV.read("outputs/Post_Growth_K.csv", DataFrame)[:,2:end]# Statistical analyses
 post_ReprK = CSV.read("outputs/Post_Repr_K.csv", DataFrame)[:,2:end]# Statistical analyses
 
-CSV.write("outputs/Sum_SurvK.csv", Post_summary(post_SurvK))
-CSV.write("outputs/Sum_GrowthK.csv", Post_summary(post_GrowthK))
-CSV.write("outputs/Sum_FecuK.csv", Post_summary(post_ReprK))
+
+Sdf = Post_summary(post_SurvK)
+Sdf.Model .= "Survial"
+
+Gdf = Post_summary(post_GrowthK)
+Gdf.Model .= "Growth"
+
+Fdf = Post_summary(post_ReprK)
+Fdf.Model .= "Fecundity"
+
+
+CSV.write("outputs/Sum_ParK.csv", vcat(Sdf, Gdf, Fdf))
 
 
 readdir("data")
 DataG = CSV.read("data/GuppyIPM.csv", DataFrame);
-
 DataK = CSV.read("data/KillifishIPM.csv", DataFrame);
 
 
@@ -94,22 +78,6 @@ ylabel!("Frequency (N)")
 
 
 
-
-########333
-
-
-function G_link(df::AbstractDataFrame, z::AbstractVector, 
-    size_cen::AbstractFloat, NK::Integer, row::Integer)
-    zc = z .- size_cen
-    z2 = z.^2 .- size_cen.^2
-    α= df.b_Intercept[row]
-    βz= df.b_z[row]
-    βz2= df.b_z2[row]
-    βNK= df."b_NK"[row]
-    βzNK= df."b_z.NK"[row]
-    μ = α .+ βNK .* NK .+  (βz .+ βzNK .* NK) .* zc .+ βz2 .* z2  # linear predictor
-    return(μ)
-end
 
 
 
@@ -155,7 +123,9 @@ end
 
 
 
-include("Figures_Guppy.jl")
+include("Figures_Guppy.jl");
+
+
 savefig("plots/Figure-1.svg")
 savefig("plots/Figure-1.png")
 

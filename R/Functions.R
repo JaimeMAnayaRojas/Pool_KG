@@ -3,9 +3,9 @@ Model_selection <- function(Full_model, name, species){
   M1 <- add_criterion(M1, c("loo", "waic"))
   
   ## remove effects
-  M2 <- update(M1, formula. = ~ . - FishBiom)
-  M2 <- add_criterion(M2, c("loo", "waic"))
-  
+  # M2 <- update(M1, formula. = ~ . - FishBiom)
+  # M2 <- add_criterion(M2, c("loo", "waic"))
+  # 
   
   M3 <- update(M1, formula. = ~ . - Density)
   M3 <- add_criterion(M3, c("loo", "waic"))
@@ -14,20 +14,22 @@ Model_selection <- function(Full_model, name, species){
   M4 <- update(M1, formula. = ~ . - canopy)
   M4 <- add_criterion(M4, c("loo", "waic"))
   
-  M5 <- update(M1, formula. = ~ . -FishBiom - canopy)
-  M5 <- add_criterion(M5, c("loo", "waic"))
+  # M5 <- update(M1, formula. = ~ . -FishBiom - canopy)
+  # M5 <- add_criterion(M5, c("loo", "waic"))
   
   
   M6 <- update(M1, formula. = ~ . -Density - canopy)
   M6 <- add_criterion(M6, c("loo", "waic"))
   
   
-  M7 <- update(M1, formula. = ~ . -Density - FishBiom - canopy)
-  M7 <- add_criterion(M7, c("loo", "waic"))
+  # M7 <- update(M1, formula. = ~ . -Density - FishBiom - canopy)
+  # M7 <- add_criterion(M7, c("loo", "waic"))
   
-  tab = data.frame(loo_compare(M1,M2, M3, M4, M5,M6, M7, criterion = "loo"))
-  mod_lis = list(M1 = M1, M2= M2, M3= M3, M4= M4, M5= M5, M6= M6, M7= M7)
+  # tab = data.frame(loo_compare(M1,M2, M3, M4, M5,M6, M7, criterion = "loo"))
+  # mod_lis = list(M1 = M1, M2= M2, M3= M3, M4= M4, M5= M5, M6= M6, M7= M7)
 
+  tab = data.frame(loo_compare(M1, M3, M4, M6, criterion = "loo"))
+  mod_lis = list(M1 = M1, M3= M3, M4= M4, M6= M6)
   
   
   

@@ -41,7 +41,7 @@ plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidt
 #xlabel!("Initial size (mm)")
 ylabel!("Survival")
 
-scatter!(DataK.SL1_mm, DataK.surv, groups = DataK.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+scatter!(DataK.SL1_mm, DataK.surv, groups = DataK.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
 
 ylims!((-0.01,1.01))
 xlims!(5,95)
@@ -116,7 +116,7 @@ DataK.growth = log.(DataK.SL2_mm ./ DataK.SL1_mm)
 
 df = filter(:Sex2 => x -> x != "M", subset(DataK, :Sex2 .=> ByRow(!ismissing)))
 
-scatter!(df.SL1_mm, df.growth, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+scatter!(df.SL1_mm, df.growth, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
 
 
 xlabel!("Killifish size (mm)")
@@ -204,7 +204,7 @@ Fig_3A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median),
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, legend = :false)
 ylabel!("Offspring (N)")
 
-scatter!(df.SL1_mm, df.Recr, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false)
+scatter!(df.SL1_mm, df.Recr, groups = df.NG, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
 ylims!((-1,20))
 xlims!(5,90)
 

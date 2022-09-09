@@ -13,6 +13,10 @@ Gz = CSV.read("data/01_GuppyField_data.csv", DataFrame)
 Kz = CSV.read( "data/01_KillifishField_data.csv", DataFrame)
 
 
+
+
+#
+
 println(describe(Gz))
 
 replace!(Gz.Mark, missing=>"NaN")
@@ -35,11 +39,125 @@ replace!(Kz.SL2_mm, missing=>NaN)
 
 
 
-
+Gz.Location = categorical(Gz.Location)
 filter!(:Location => x -> x !="JOE", Gz)
 filter!(:Location => x -> x !="JOE", Kz)
 
-Gz.Location = categorical(Gz.Location)
+### Make data for recruitment
+
+#
+
+Gz.R1 .= 1
+Gz.R2 .= 0
+
+#Gz.R1[findall(Gz.SL1_mm .> 14.)] .= 0
+Gz.R2[findall(Gz.Mark .== NaN)] .= 1
+
+isna.(Gz.Mark)
+Kz.R1 .= 1
+Kz.R2 .= 1
+
+Kz.R1[findall(Kz.SL1_mm .> 14.)] .= 0
+Kz.R2[findall(Kz.SL2_mm .> 14.)] .= 0
+
+
+println(names(Gz))
+
+sGz = combine(groupby(Gz, [:Location, :NK]), [:R1, :R2] .=> [sum, sum] .=> [:Recr_1, :Recr_2])
+sKz = combine(groupby(Kz, [:Location, :NG]), [:R1, :R2] .=> [sum, sum] .=> [:Recr_1, :Recr_2])
+
+
+DataG = CSV.read("data/GuppyIPM.csv", DataFrame);
+DataK = CSV.read("data/KillifishIPM.csv", DataFrame);
+
+# Get the environmental data only
+EnvDat = vcat(DataG[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :area, :BiomassG1, :BiomassK1]],DataK[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :area, :BiomassG1, :BiomassK1]])
+
+
+EnvDat.FishBiomass = EnvDat.BiomassG1 .+ EnvDat.BiomassK1;
+EnvDat.Density = EnvDat.FishBiomass ./ EnvDat.area;
+
+
+
+
+
+
+EnvDat = outerjoin(EnvDat, 
+combine(groupby(EnvDat, [:Location]), [:Density, :Density, :area, :area] .=> [mean, std,mean, std]), 
+        on = :Location
+)
+
+
+EnvDat.Density_s = (EnvDat.Density .- EnvDat.Density_mean) ./ EnvDat.Density_std;  
+EnvDat.Area_s = (EnvDat.area .- EnvDat.area_mean) ./ EnvDat.area_std;  
+
+EnvDat
+
+
+
+filter(:NG => x -> x != 1, EnvDat )
+
+a = combine(groupby(filter(:NG => x -> x != 1, EnvDat ), [:Location, :NK]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
+GupRecr = outerjoin(sGz, a, on = [:Location, :NK])
+
+
+a = combine(groupby(filter(:NK => x -> x != 1, EnvDat ), [:Location, :NG]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
+
+KillRecr = outerjoin(sKz, a, on = [:Location, :NG])
+
+
+# Make recruitment plots for guppies and killifish
+
+rename!(GupRecr, :NK => :Removal)
+GupRecr.Sp .= "G"
+
+rename!(KillRecr, :NG => :Removal)
+KillRecr.Sp .= "K"
+RecrData = vcat(GupRecr, KillRecr)
+
+RecrData.RCh = log.(RecrData.Recr_2 ./ RecrData.Recr_1) 
+
+
+include("Functions.jl")
+@rput GupRecr 
+@rput KillRecr
+
+R"""
+library("brms")
+
+GupRecr$Removal = factor(GupRecr$Removal)
+GupRecr$z = GupRecr$Recr_1 - 50
+mG <- brm( Recr_2 ~ z * Removal + Density + Area, family = negbinomial(), GupRecr)
+post_mG = posterior_samples(mG)
+
+KillRecr$Removal = factor(KillRecr$Removal)
+KillRecr$z = KillRecr$Recr_1 - 50
+mK <- brm( Recr_2 ~ z * Removal + Density + Area, family = negbinomial(), KillRecr)
+post_mK = posterior_samples(mK)
+
+
+"""
+
+@rget post_mG
+
+
+R"""
+summary(m1)
+"""
+println(Post_summary(postRec))
+
+
+postRec
+
+
+
+#
+scatter(RecrData.Recr_1, RecrData.Recr_2, legend =:left)
+plot!([0,300], [0, 300])
+
+
+scatter(GupRecr.Recr_1, GupRecr.Recr_2, groups = GupRecr.NK)
+plot!([0,80], [0, 80])
 
 
 

@@ -1,0 +1,34 @@
+,,,,,,,Killifish,,,,
+Fitness proxy,Treatment effects,Env. Covariates,GLM family,elpd_diff,se_diff,,Treatment effects,Env. Covariates,GLM family,elpd_diff,se_diff
+,Guppy,,,,,,,,,,
+Survival,~ Size + NK + Size:NK,+ Canopy,Bernoulli (link= logit),0.000,0.000,,Survival ~ Size + NG + Size:NG,,Bernoulli (link= logit),0.000,0.000
+,,+ Density + Canopy,,-1.058,1.294,,,+ Density,,-0.859,0.194
+,,,,-1.282,1.835,,,+ Canopy,,-0.896,0.520
+,,+ Density,,-2.055,2.175,,,+ Density + Canopy,,-2.188,0.482
+,,,,,,,,,,,
+Growth,~ Size + NK + Size:NK,+ Canopy,Normal (link= identity),0.000,0.000,,Growth (< 30mm) ~  Size + NK + Size:NK; ,+ Density,Normal (link= identity),0.000,0.000
+,,+ Density + Canopy,,-0.725,0.839,,,,,-0.281,0.189
+,,,,-8.287,4.945,, Growth (> 30mm) ~  Size + NK + Size:NK,+ Density + Canopy,,-0.824,0.666
+,,+ Density,,-10.034,4.768,,,+ Canopy,,-1.001,1.369
+,,,,,,,,,,,
+Fecundity,~ Size + NK + Size:NK,+ Density + Canopy,Negative binomial (link =log),0.000,0.000,,N Offspring ~ Size + NG,+ Density,Negative binomial (link =log),0.000,0.000
+,,+ Canopy,,-1.115,3.416,,,,,-0.660,3.257
+,,,,-5.908,5.019,,,+ Canopy,,-0.952,3.208
+,,+ Density,,-6.794,4.590,,,+ Density + Canopy,,-1.033,0.761
+,,,,,,,,,,,
+,Killifish,,,,,,,,,,
+,,,,,,,,,,,
+Survival,~ Size + NG + Size:NG,,Bernoulli (link= logit),0.000,0.000,,,,,,
+,,+ Density,,-0.859,0.194,,,,,,
+,,+ Canopy,,-0.896,0.520,,,,,,
+,,+ Density + Canopy,,-2.188,0.482,,,,,,
+,,,,,,,,,,,
+Growth,(< 30mm) ~  Size + NK + Size:NK; ,+ Density,Normal (link= identity),0.000,0.000,,,,,,
+,,,,-0.281,0.189,,,,,,
+,(> 30mm) ~  Size + NK + Size:NK,+ Density + Canopy,,-0.824,0.666,,,,,,
+,,+ Canopy,,-1.001,1.369,,,,,,
+,,,,,,,,,,,
+Fecundity,~ Size + NG,+ Density,Negative binomial (link =log),0.000,0.000,,,,,,
+,,,,-0.660,3.257,,,,,,
+,,+ Canopy,,-0.952,3.208,,,,,,
+,,+ Density + Canopy,,-1.033,0.761,,,,,,
