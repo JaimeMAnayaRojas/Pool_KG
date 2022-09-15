@@ -44,6 +44,26 @@ filter!(:Location => x -> x !="JOE", Gz)
 filter!(:Location => x -> x !="JOE", Kz)
 
 ### Make data for recruitment
+Gz.N .= 1
+Kz.N .= 1
+
+GN = combine(groupby(Gz, [:Location, :Pool_1]), :N .=> sum .=> :G)
+KN = combine(groupby(Kz, [:Location, :Pool_1]), :N .=> sum .=> :K)
+NDF = outerjoin(GN, KN, on = [:Location, :Pool_1])
+
+# Number ratio
+
+NDF.ratio = NDF.K ./ NDF.G
+
+NDF = NDF[1:10,:]
+
+mean(NDF.ratio)
+std(NDF.ratio)
+
+minimum(NDF.ratio)
+maximum(NDF.ratio)
+
+
 
 #
 
@@ -51,20 +71,22 @@ Gz.R1 .= 1
 Gz.R2 .= 0
 
 #Gz.R1[findall(Gz.SL1_mm .> 14.)] .= 0
-Gz.R2[findall(Gz.Mark .== NaN)] .= 1
 
-isna.(Gz.Mark)
-Kz.R1 .= 1
-Kz.R2 .= 1
-
-Kz.R1[findall(Kz.SL1_mm .> 14.)] .= 0
-Kz.R2[findall(Kz.SL2_mm .> 14.)] .= 0
+GupR = copy(Gz)
+filter!(:SL2_mm => x -> x <= 14, GupR)
+filter!(:Mark => x -> x == "NaN", GupR)
 
 
-println(names(Gz))
+KillR = copy(Kz)
+filter!(:SL2_mm => x -> x <= 28, KillR)
+filter!(:Mark => x -> x == "NaN", KillR)
 
-sGz = combine(groupby(Gz, [:Location, :NK]), [:R1, :R2] .=> [sum, sum] .=> [:Recr_1, :Recr_2])
-sKz = combine(groupby(Kz, [:Location, :NG]), [:R1, :R2] .=> [sum, sum] .=> [:Recr_1, :Recr_2])
+
+GupR.N .=1
+KillR.N .=1
+
+sGz = combine(groupby(GupR, [:Location, :NK]), :N .=> sum .=> :Recrt)
+sKz = combine(groupby(KillR, [:Location, :NG]), :N .=> sum .=> :Recrt)
 
 
 DataG = CSV.read("data/GuppyIPM.csv", DataFrame);
@@ -77,88 +99,120 @@ EnvDat = vcat(DataG[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :area, :BiomassG
 EnvDat.FishBiomass = EnvDat.BiomassG1 .+ EnvDat.BiomassK1;
 EnvDat.Density = EnvDat.FishBiomass ./ EnvDat.area;
 
-
-
-
-
-
 EnvDat = outerjoin(EnvDat, 
 combine(groupby(EnvDat, [:Location]), [:Density, :Density, :area, :area] .=> [mean, std,mean, std]), 
         on = :Location
 )
 
-
 EnvDat.Density_s = (EnvDat.Density .- EnvDat.Density_mean) ./ EnvDat.Density_std;  
 EnvDat.Area_s = (EnvDat.area .- EnvDat.area_mean) ./ EnvDat.area_std;  
-
 EnvDat
-
-
 
 filter(:NG => x -> x != 1, EnvDat )
 
 a = combine(groupby(filter(:NG => x -> x != 1, EnvDat ), [:Location, :NK]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
 GupRecr = outerjoin(sGz, a, on = [:Location, :NK])
 
-
 a = combine(groupby(filter(:NK => x -> x != 1, EnvDat ), [:Location, :NG]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
-
 KillRecr = outerjoin(sKz, a, on = [:Location, :NG])
 
 
 # Make recruitment plots for guppies and killifish
 
 rename!(GupRecr, :NK => :Removal)
-GupRecr.Sp .= "G"
+GupRecr.Sp .= "Guppy"
 
 rename!(KillRecr, :NG => :Removal)
-KillRecr.Sp .= "K"
+KillRecr.Sp .= "Killifish"
 RecrData = vcat(GupRecr, KillRecr)
+RecrData
 
-RecrData.RCh = log.(RecrData.Recr_2 ./ RecrData.Recr_1) 
+RecrData.Recrt[findall(ismissing.(RecrData.Recrt))] .= 0
 
+
+CSV.write("data/Recruitment_data.csv", RecrData)
 
 include("Functions.jl")
-@rput GupRecr 
-@rput KillRecr
+@rput RecrData 
 
 R"""
-library("brms")
+library(brms)
 
-GupRecr$Removal = factor(GupRecr$Removal)
-GupRecr$z = GupRecr$Recr_1 - 50
-mG <- brm( Recr_2 ~ z * Removal + Density + Area, family = negbinomial(), GupRecr)
+Data <- RecrData #read.csv("data/Recruitment_data.csv")
+
+Data$Pool = factor(paste(Data$Removal,Data$Sp, sep = "-"))
+
+levels(Data$Pool) <- c("KGG", "KGK", "NK", "NG")
+Data$Pool = factor(Data$Pool, levels = c("KGG", "NK", "KGK", "NG"))
+
+# get_prior(Recrt ~ 0 + Pool + (1|Location), family = negbinomial(), Data)
+
+
+prios = prior(normal(3,1), class = b, coef = PoolKGG) +
+        prior(normal(3,1), class = b, coef = PoolKGK) +
+        prior(normal(3,1), class = b, coef = PoolNG) +
+        prior(normal(3,1), class = b, coef = PoolNK) +
+mG <- brm( Recrt ~ 0 + Pool + (1|Location), family = negbinomial(), Data, prior = prios,
+           iter = 2000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 13))
 post_mG = posterior_samples(mG)
-
-KillRecr$Removal = factor(KillRecr$Removal)
-KillRecr$z = KillRecr$Recr_1 - 50
-mK <- brm( Recr_2 ~ z * Removal + Density + Area, family = negbinomial(), KillRecr)
-post_mK = posterior_samples(mK)
-
-
+summary(mG)
 """
-
 @rget post_mG
 
+### Recruitment plot
+
+HDI(post_mG.b_Density)
+LOS(post_mG.b_Density)
+
+mp = Post_summary(exp.(post_mG))
+mp = mp[1:4,:]
+mp.Species = ["Guppy", "Guppy", "Killifish", "Killifish"]
+mp.Pool = ["KGG", "NK", "KGK", "NG"]
+mp.X = [0.75, 1.25, 1.75,2.25]
 
 R"""
-summary(m1)
+levels(Data$Pool) <- c(0.75, 1.25, 1.75,2.25)
+
+Data$Pool = as.numeric(as.character(Data$Pool))
+
 """
-println(Post_summary(postRec))
+
+@rget Data
 
 
-postRec
+plot()
+plot!([0.75, 0.75, NaN, 1.25 , 1.25,  NaN , 1.75, 1.75, NaN, 2.25,2.25], 
+		  [mp[1, :l95], mp[1, :u95], NaN,
+		  mp[2, :l95], mp[2, :u95], NaN,
+		  mp[3, :l95], mp[3, :u95], NaN,
+		  mp[4, :l95], mp[4, :u95]],
+		   c = :black,  lab = false, linewidth = 1.5
+)
 
+plot!([0.75, 0.75, NaN, 1.25 , 1.25,  NaN , 1.75, 1.75, NaN, 2.25,2.25], 
+		  [mp[1, :l68], mp[1, :u68], NaN,
+		  mp[2, :l68], mp[2, :u68], NaN,
+		  mp[3, :l68], mp[3, :u68], NaN,
+		  mp[4, :l68], mp[4, :u68]],
+		   c = :gray,  lab = false, linewidth = 4)
 
+scatter!(mp.X, mp.median, #yerr=[mp.l95 mp.u95],
+markersize = 8, c= ["lightskyblue", "red", "lightskyblue", "red"], legend =:false
+)
 
-#
-scatter(RecrData.Recr_1, RecrData.Recr_2, legend =:left)
-plot!([0,300], [0, 300])
+using Distributions
+σ =  rand(Normal(0,0.02),16)
+Data.Pool = Data.Pool .+ σ
+scatter!(Data.Pool, Data.Recrt, #yerr=[mp.l95 mp.u95],
+markersize = 2, c= :gray, legend =:false
+)
+xlims!(0.5,2.5)
+plot!([1.5,1.5], [0,90], c = :black, lw = 2)
+ylims!((-1.2,90))
+ylabel!("Recruits (N)")
+xticks!([0.75, 1, 1.25, 1.75, 2, 2.25], ["KG", "Guppy", "NK", "KG", "Killifish", "NG"], fontsize = 14)
 
-
-scatter(GupRecr.Recr_1, GupRecr.Recr_2, groups = GupRecr.NK)
-plot!([0,80], [0, 80])
-
+savefig("plots/Recruitment.svg")
 
 
 # Caigual

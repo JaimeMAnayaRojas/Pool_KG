@@ -47,6 +47,23 @@ end
 
 my_summary(KG)
 
+
+
+G_KG10 = My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_z .* (10-18) );
+G_NK10 = My_Logistic.(post_SurvG.b_Intercept .+ (post_SurvG.b_z .+ post_SurvG."b_z.NK" ) .* (10-18) );
+
+mean(G_NK10 ./ G_KG10)
+HDI(G_NK10 ./ G_KG10)
+
+
+G_KG25 = My_Logistic.(post_SurvG.b_Intercept .+ post_SurvG.b_z .* (25-18) );
+G_NK25 = My_Logistic.(post_SurvG.b_Intercept .+ (post_SurvG.b_z .+ post_SurvG."b_z.NK" ) .* (25-18) );
+
+mean(G_NK25 ./ G_KG25)
+HDI(G_NK25 ./ G_KG25)
+
+
+
 # Plot NG
 p = My_Logistic.(my_summary(KG))
 Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
@@ -61,21 +78,16 @@ ylims!((-0.01,1.01))
 xlims!(8,30)
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, label= :false)
 
-    # estimation graphs
-
-
-
-
 scatter!(DataG.SL1_mm, DataG.surv , groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
 
+# estimation graphs
 
 lab= round(LOS(post_SurvG.b_NK), digits = 2)
-
 
 Fig_1A_α = plot(kde(post_SurvG.b_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
 title = "            Statistical Test  \n   probability that NK > KG:  \n \n $(lab)%", titleloc = :left, titlefontsize = 9)
 plot!(kde(post_SurvG.b_Intercept .+ post_SurvG.b_NK), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
-xlabel!("Intercept")
+xlabel!("Intercept (α)")
 plot!([0,0], [0,1.1], c=:red, linewidth=2)
 
 
@@ -83,8 +95,11 @@ lab= round(LOS(post_SurvG."b_z.NK"), digits = 2)
 Fig_1A_β = plot(kde(post_SurvG.b_z), fillrange=-0, fillalpha=0.25, legend= :false, 
 title= "\n  $(lab)%", titlefontsize = 9, titleloc= :left, ticks =:false)
 plot!(kde(post_SurvG.b_z .+ post_SurvG."b_z.NK"), fillrange=-0, fillalpha=0.25, legend= :false,  ticks =:false)
-xlabel!("Slope (z)")
+xlabel!("Slope (β)")
 plot!([0,0], [0,12], c=:red, linewidth=2)
+
+
+
 
 
 

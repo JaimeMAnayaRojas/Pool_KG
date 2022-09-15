@@ -80,13 +80,13 @@ end
 ### Plot recruitment function
 
 
-# size clases
-size_cen = 50.0
-z =  collect(5:1:300)
-z1 = z
+# # size clases
+# size_cen = 50.0
+# z =  collect(5:1:300)
+# z1 = z
 
-KG = zeros(size(post_mG)[1], length(z));
-NK = zeros(size(post_mG)[1], length(z));
+# KG = zeros(size(post_mG)[1], length(z));
+# NK = zeros(size(post_mG)[1], length(z));
 
 
 
@@ -104,60 +104,60 @@ end
 
 
 
-for i in 1:size(post_mG)[1]
-    KG[i,:] =  (Recr_link(post_mG, z, size_cen, 0, i))
-    NK[i,:] =  (Recr_link(post_mG, z, size_cen, 1, i))
-end
+# for i in 1:size(post_mG)[1]
+#     KG[i,:] =  (Recr_link(post_mG, z, size_cen, 0, i))
+#     NK[i,:] =  (Recr_link(post_mG, z, size_cen, 1, i))
+# end
 
-my_summary(KG)
+# my_summary(KG)
 
-# Plot NG
-p = My_Logistic.(my_summary(KG))
-Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
-    linewidth = 5, label = "KG", title = "a)", titleloc = :left, legend = :bottomright    
-)
+# # Plot NG
+# p = My_Logistic.(my_summary(KG))
+# Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
+#     linewidth = 5, label = "KG", title = "a)", titleloc = :left, legend = :bottomright    
+# )
 
-p = My_Logistic.(my_summary(NK))
-plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NK")
-#xlabel!("Initial size (mm)")
-ylabel!("Survival")
-ylims!((-0.01,1.01))
-xlims!(8,30)
-plot!([18,18], [0,100], linestyle = :dash, colour = :gray, label= :false)
+# p = My_Logistic.(my_summary(NK))
+# plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NK")
+# #xlabel!("Initial size (mm)")
+# ylabel!("Survival")
+# ylims!((-0.01,1.01))
+# xlims!(8,30)
+# plot!([18,18], [0,100], linestyle = :dash, colour = :gray, label= :false)
 
     # estimation graphs
 
 
 
 
-scatter!(DataG.SL1_mm, DataG.surv , groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
+# scatter!(DataG.SL1_mm, DataG.surv , groups = DataG.NK, c= [:lightskyblue, :red], alpha = 0.8, label =false, markersize = 3)
 
 
-lab= round(LOS(post_SurvG.b_NK), digits = 2)
+# lab= round(LOS(post_SurvG.b_NK), digits = 2)
 
 
-Fig_1A_α = plot(kde(post_SurvG.b_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
-title = "            Statistical Test  \n   probability that NK > KG:  \n \n $(lab)%", titleloc = :left, titlefontsize = 9)
-plot!(kde(post_SurvG.b_Intercept .+ post_SurvG.b_NK), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
-xlabel!("Intercept")
-plot!([0,0], [0,1.1], c=:red, linewidth=2)
+# Fig_1A_α = plot(kde(post_SurvG.b_Intercept), fillrange=-0, fillalpha=0.25, legend= :false, 
+# title = "            Statistical Test  \n   probability that NK > KG:  \n \n $(lab)%", titleloc = :left, titlefontsize = 9)
+# plot!(kde(post_SurvG.b_Intercept .+ post_SurvG.b_NK), fillrange=-0, fillalpha=0.25, legend= :false, ticks =:false)
+# xlabel!("Intercept")
+# plot!([0,0], [0,1.1], c=:red, linewidth=2)
 
 
-lab= round(LOS(post_SurvG."b_z.NK"), digits = 2)
-Fig_1A_β = plot(kde(post_SurvG.b_z), fillrange=-0, fillalpha=0.25, legend= :false, 
-title= "\n  $(lab)%", titlefontsize = 9, titleloc= :left, ticks =:false)
-plot!(kde(post_SurvG.b_z .+ post_SurvG."b_z.NK"), fillrange=-0, fillalpha=0.25, legend= :false,  ticks =:false)
-xlabel!("Slope (z)")
-plot!([0,0], [0,12], c=:red, linewidth=2)
+# lab= round(LOS(post_SurvG."b_z.NK"), digits = 2)
+# Fig_1A_β = plot(kde(post_SurvG.b_z), fillrange=-0, fillalpha=0.25, legend= :false, 
+# title= "\n  $(lab)%", titlefontsize = 9, titleloc= :left, ticks =:false)
+# plot!(kde(post_SurvG.b_z .+ post_SurvG."b_z.NK"), fillrange=-0, fillalpha=0.25, legend= :false,  ticks =:false)
+# xlabel!("Slope (z)")
+# plot!([0,0], [0,12], c=:red, linewidth=2)
 
 
 
 
-l = @layout [
-    a [b{0.4h}
-       c{0.4h}]
-]
+# l = @layout [
+#     a [b{0.4h}
+#        c{0.4h}]
+# ]
 
-FA = plot(Fig_1A, Fig_1A_α, Fig_1A_β,
-    layout = l
-)
+# FA = plot(Fig_1A, Fig_1A_α, Fig_1A_β,
+#     layout = l
+# )
