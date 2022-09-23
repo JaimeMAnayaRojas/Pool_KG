@@ -32,12 +32,12 @@ my_summary(KG)
 
 # Plot NG
 p = My_Logistic.(my_summary(KG))
-Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
+Fig_1A =plot(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), 
     linewidth = 5, label = "KG", title = "a)", titleloc = :left, legend = :bottomright    
 )
 
 p = My_Logistic.(my_summary(NG))
-plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NG")
+plot!(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), linewidth = 5, label = "NG")
 #xlabel!("Initial size (mm)")
 ylabel!("Survival")
 
@@ -96,12 +96,12 @@ end
 
 # Plot NG
 p = my_summary(KG)
-Fig_2A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
+Fig_2A =plot(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), 
     linewidth = 5, label = "KG", title = "b)", titleloc = :left, legend = :bottomright    
 )
 
 p = my_summary(NG)
-plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NG")
+plot!(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), linewidth = 5, label = "NG")
 #xlabel!("Initial size (mm)")
 α = mean(post_GrowthK.b_omega_Intercept)
 
@@ -194,12 +194,12 @@ end
 
 # Plot NG
 p = exp.(my_summary(KG))
-Fig_3A =plot(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), 
+Fig_3A =plot(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), 
     linewidth = 5, label = "KG", title = "c)", titleloc = :left, legend = :bottomright, c = :gray    
 )
 
 # p = exp.(my_summary(NG))
-# plot!(z, p[:,:median], ribbon = (p.median .- p.l68, p.u68 .- p.median), linewidth = 5, label = "NG")
+# plot!(z, p[:,:median], ribbon = (p.median .- p.l95, p.u95 .- p.median), linewidth = 5, label = "NG")
 # #xlabel!("Initial size (mm)")
 plot!([18,18], [0,100], linestyle = :dash, colour = :gray, legend = :false)
 ylabel!("Offspring (N)")

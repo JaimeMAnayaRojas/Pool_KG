@@ -1,0 +1,512 @@
+ggplot(RecrData, aes(x=Pool, y=Recrt)) + geom_point()
+ggplot(subset(RecrData, Sp == "Guppy"), aes(x=Pool, y=Recrt)) + geom_point()
+ggplot(subset(RecrData, Sp == "Guppy"), aes(x=Pool, y=Recrt)) + geom_point()
+levels(RecrData$Pool)
+levels(RecrData$Pool) <- c("KG", "NK", "KG", "NG")
+ggplot(subset(RecrData, Sp == "Guppy"), aes(x=Pool, y=Recrt)) + geom_point()
+ggplot(subset(RecrData, Sp == "Guppy"), aes(x=Pool, y=Recrt)) +
+geom_point(position = position_jitterdodge(dodge.width=1))
+pd = position_dodge(0.9)
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=Recrt)) +
+geom_point(position = position_jitterdodge(dodge.width=1))
+RecrDF$Sp <-c("Guppy", "Guppy", "Killifish", "Killifish")
+RecrDF$Pool <- c("KG", "NK", "KG", "NG")
+names(RecrDF) <- c("mean", "l95", "u95" )
+RecrDF
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=Recrt)) +
+geom_point(position = position_jitterdodge(dodge.width=1))
+RecrDF
+RecrDF = as.data.frame(cbind(apply(post_Recr, 2, mean),
+t(apply(post_Recr, 2, hdi, credMass=.95))[,1],
+t(apply(post_Recr, 2, hdi, credMass=.95))[,2]))
+RecrDF$Sp <-c("Guppy", "Guppy", "Killifish", "Killifish")
+RecrDF$Pool <- c("KG", "NK", "KG", "NG")
+names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
+RecrDF
+levels(RecrData$Pool) <- c("KG", "NK", "KG", "NG")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean)) +
+geom_point()
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean)) +
+geom_point(size = 4)
+ggplot(subset(RecrDF, Sp == "Guppy", colour = Pool), aes(x=Pool, y=mean)) +
+geom_point(size = 4) +
+pd = position_dodge(0.9)
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) +
+pd = position_dodge(0.9)
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4)
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange"))
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+#geom_ribbon( aes(ymin = l95, ymax = u95, fill= Treatment),
+#            alpha = 0.2, size = 0.01, show.legend = F) +
+ylab("Recruits (N)") +
+xlab("Treatment") +
+pd = position_dodge(0.9)
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+#geom_ribbon( aes(ymin = l95, ymax = u95, fill= Treatment),
+#            alpha = 0.2, size = 0.01, show.legend = F) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+#geom_ribbon( aes(ymin = l95, ymax = u95, fill= Treatment),
+#            alpha = 0.2, size = 0.01, show.legend = F) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1),
+size = 0.75, alpha = 0.3) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1),
+size = 0.75, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 0.75, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+subset(RecrDF, Sp == "Killifish")
+subset(RecrData, Sp == "Killifish")
+RecrData #read.csv("data/Recruitment_data.csv")
+RecrData$Pool = factor(paste(RecrData$Removal,RecrData$Sp, sep = "-"))
+RecrData <- read.csv("data/Recruitment_data.csv")
+RecrData #read.csv("data/Recruitment_data.csv")
+RecrData$Pool = factor(paste(RecrData$Removal,RecrData$Sp, sep = "-"))
+levels(RecrData$Pool) <- c("KGG", "KGK", "NK", "NG")
+RecrData$Pool = factor(RecrData$Pool, levels = c("KGG", "NK", "KGK", "NG"))
+priors2 = prior(normal(3,0.5), class = b, coef = PoolKGG) +
+prior(normal(3,0.5), class = b, coef = PoolKGK) +
+prior(normal(3,0.5), class = b, coef = PoolNG) +
+prior(normal(3,0.5), class = b, coef = PoolNK)
+post_Recr = exp(post_Recr[,1:4])
+RecrDF = as.data.frame(cbind(apply(post_Recr, 2, mean),
+t(apply(post_Recr, 2, hdi, credMass=.95))[,1],
+t(apply(post_Recr, 2, hdi, credMass=.95))[,2]))
+RecrDF$Sp <-c("Guppy", "Guppy", "Killifish", "Killifish")
+RecrDF$Pool <- c("KG", "NK", "KG", "NG")
+names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
+RecrDF
+RecrData
+RecrData$Treatment =  RecrData$Pool
+levels(RecrData$Treatment) <- c("KG", "NK", "KG", "NG")
+RecrData$Treatment
+plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Pool),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+RecrData$Treatment =  RecrData$Pool
+levels(RecrData$Treatment)
+levels(RecrData$Treatment) <- c("KG", "NK", "KG", "NG")
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Pool, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+post_Recr = exp(post_Recr[,1:4])
+RecrDF = as.data.frame(cbind(apply(post_Recr, 2, mean),
+t(apply(post_Recr, 2, hdi, credMass=.95))[,1],
+t(apply(post_Recr, 2, hdi, credMass=.95))[,2]))
+RecrDF$Sp <-c("Guppy", "Guppy", "Killifish", "Killifish")
+RecrDF$Pool <- c("KG", "NK", "KG", "NG")
+names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
+RecrDF
+RecrData$Treatment =  RecrData$Pool
+levels(RecrData$Treatment) <- c("KG", "NK", "KG", "NG")
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+post_Recr = posterior_samples(mG)
+summary(mG)
+post_Recr = exp(post_Recr[,1:4])
+RecrDF = as.data.frame(cbind(apply(post_Recr, 2, mean),
+t(apply(post_Recr, 2, hdi, credMass=.95))[,1],
+t(apply(post_Recr, 2, hdi, credMass=.95))[,2]))
+RecrDF$Sp <-c("Guppy", "Guppy", "Killifish", "Killifish")
+RecrDF$Pool <- c("KG", "NK", "KG", "NG")
+names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
+RecrDF
+RecrData$Treatment =  RecrData$Pool
+levels(RecrData$Treatment) <- c("KG", "NK", "KG", "NG")
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+###
+library("ggpubr")
+theme_set(
+theme_classic()
+)
+figure1 <- ggarrange(plotA, plotB, plotC, plotD,
+ncol = 1, nrow = 6, heights = c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure1 <- ggarrange(plotA, plotB, plotC, plotD,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 1, nrow = 6, heights = c(0.9, 0.9, 0.9, 0.9),
+withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure1
+figure1 <- ggarrange(plotA, plotB, plotC, plotD,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2, heights = c(0.9, 0.9, 0.9, 0.9),
+withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure1
+figure1 <- ggarrange(plotA, plotB, plotC, plotD,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure1
+figure2 <- ggarrange(plotAK, plotBK, plotCK, plotDK,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure2 <- ggarrange(plotKA, plotBK, plotCK, plotDK,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure2 <- ggarrange(plotKA, plotKB, plotKC, plotDK,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure2
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment")
+)
+LOS(post_Recr$b_PoolNK - post_Recr$b_PoolKGG)
+pp = LOS(post_Recr$b_PoolNK - post_Recr$b_PoolKGG)
+pp = paste(round(pp,1),"%", sep = "")
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 88, y=0.65, label = pp )
+)
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 1, y=0.65, label = pp )
+)
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=0.65, label = pp )
+)
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=80, label = pp )
+)
+(plotD <- ggplot(subset(RecrDF, Sp == "Guppy"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Guppy"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=85, label = pp )
+)
+ppk = LOS(post_Recr$b_PoolNG - post_Recr$b_PoolKGK)
+ppk = paste(round(ppk,1),"%", sep = "")
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=85, label = pp )
+)
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=85, label = ppk )
+)
+(plotDK <- ggplot(subset(RecrDF, Sp == "Killifish"), aes(x=Pool, y=mean, colour = Pool)) +
+geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
+geom_errorbar(aes(ymin=l95, ymax=u95), width=.1) +
+theme_classic() + theme(panel.grid.major = element_blank(), legend.position = "none") +
+geom_point(data = subset(RecrData, Sp == "Killifish"),
+mapping = aes(x = Treatment, y = Recrt, color = Treatment),
+position = position_jitterdodge(dodge.width=1.5),
+size = 1, alpha = 0.7) +
+ylab("Recruits (N)") +
+xlab("Treatment") + annotate("text", x = 2.5, y=60, label = ppk )
+)
+###
+library("ggpubr")
+theme_set(
+theme_classic()
+)
+figure1 <- ggarrange(plotA, plotB, plotC, plotD,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure1
+svg("plots/Figure1.svg", width = 7, height = 7 )
+figure1
+graphics.off()
+theme_set(
+theme_classic()
+)
+figure2 <- ggarrange(plotKA, plotKB, plotKC, plotDK,
+labels = c("A)", "B)", "C)", "D)"),
+ncol = 2, nrow = 2,
+#heights = c(0.9, 0.9, 0.9, 0.9),
+#withds =  c(0.9, 0.9, 0.9, 0.9),
+font.label = list(size = 10, color = "black", face = "bold", family = NULL)
+)
+figure2
+svg("plots/Figure2.svg", width = 7, height = 7 )
+figure2
+graphics.off()
+plotA
+summary(S1)
+postS = posterior_samples(S1)
+apply(postS, 2, LOS)
+#
+LOS(P_link(post = postS, NK = 1, size = 10) - P_link(post = postS, NK = 0, size = 10))
+#
+100-LOS(P_link(post = postS, NK = 1, size = 10) - P_link(post = postS, NK = 0, size = 10))
+LOS(P_link(post = postS, NK = 1, size = 30) - P_link(post = postS, NK = 0, size = 30))
+#
+mean(P_link(post = postS, NK = 1, size = 10) - P_link(post = postS, NK = 0, size = 10))
+#
+mean(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)) - inv_logit_scaled(P_link(post = postS, NK = 0, size = 10)))
+hdi(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)) - inv_logit_scaled(P_link(post = postS, NK = 0, size = 10)))
+#
+mean(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)))
+#
+mean(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)))*100
+hdin(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)))*100
+hdi(inv_logit_scaled(P_link(post = postS, NK = 1, size = 10)))*100
+#
+mean(inv_logit_scaled(P_link(post = postS, NK = 0, size = 10)))*100
+hdi(inv_logit_scaled(P_link(post = postS, NK = 0, size = 10)))*100
+postG = posterior_samples(G1)
+View(postS)
+##
+mean((P_link(post = postG, NK = 0, size = 10)))
+hdi(inv_logit_scaled(P_link(post = postG, NK = 0, size = 10)))
+mean(inv_logit_scaled(P_link(post = postG, NK = 1, size = 10)))
+hdi(inv_logit_scaled(P_link(post = postG, NK = 1, size = 10)))
+##
+exp(mean((P_link(post = postG, NK = 0, size = 10))))
+##
+exp(mean((P_link(post = postG, NK = 0, size = 10))))
+(hdi((P_link(post = postG, NK = 0, size = 10))))
+exp(hdi((P_link(post = postG, NK = 0, size = 10))))
+exp(mean((P_link(post = postG, NK = 1, size = 10))))
+exp(hdi((P_link(post = postG, NK = 1, size = 10))))
+plotB
+summary(G1)
+postG = posterior_samples(G1)
+apply(postG, 2, LOS)
+apply(postG, 2, mean)
+apply(postG, 2, LOS)
+apply(postG, 2, hdi)
+summary(R2)
+summary(R1)
+postR = posterior_samples(R1)
+summary(R1)
+plotC
+apply(postR, 2, LOS)
+apply(postR, 2, mean_ci)
+apply(postR, 2, LOS)
+apply(postR, 2, mean)
+apply(postS, 2, LOS)
+t(apply(postS, 2, LOS))
+t(apply(postS, 2, hdi))
+cbind(t(apply(postS, 2, hdi)),(apply(postS, 2, LOS)))
+cbind((apply(postS, 2, mean)), t(apply(postS, 2, hdi)),(apply(postS, 2, LOS)))
+round(cbind((apply(postS, 2, mean)), t(apply(postS, 2, hdi)),(apply(postS, 2, LOS))),3)
+View(postS)
+round(cbind((apply(postG, 2, mean)), t(apply(postG, 2, hdi)),(apply(postG, 2, LOS))),3)
+View(postG)
+round(cbind((apply(postR, 2, mean)), t(apply(postR, 2, hdi)),(apply(postR, 2, LOS))),3)

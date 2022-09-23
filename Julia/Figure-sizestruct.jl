@@ -93,27 +93,29 @@ DataG = CSV.read("data/GuppyIPM.csv", DataFrame);
 DataK = CSV.read("data/KillifishIPM.csv", DataFrame);
 
 # Get the environmental data only
-EnvDat = vcat(DataG[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :area, :BiomassG1, :BiomassK1]],DataK[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :area, :BiomassG1, :BiomassK1]])
+EnvDat = vcat(DataG[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :canopy, :area, :BiomassG1, :BiomassK1]],DataK[:, [:Location, :sp, :Pool_1, :KG, :NK, :NG, :canopy, :area, :BiomassG1, :BiomassK1]])
 
 
 EnvDat.FishBiomass = EnvDat.BiomassG1 .+ EnvDat.BiomassK1;
 EnvDat.Density = EnvDat.FishBiomass ./ EnvDat.area;
+EnvDat.Density = EnvDat.FishBiomass ./ EnvDat.area;
+
 
 EnvDat = outerjoin(EnvDat, 
-combine(groupby(EnvDat, [:Location]), [:Density, :Density, :area, :area] .=> [mean, std,mean, std]), 
+combine(groupby(EnvDat, [:Location]), [:Density, :Density, :canopy, :canopy] .=> [mean, std,mean, std]), 
         on = :Location
 )
 
 EnvDat.Density_s = (EnvDat.Density .- EnvDat.Density_mean) ./ EnvDat.Density_std;  
-EnvDat.Area_s = (EnvDat.area .- EnvDat.area_mean) ./ EnvDat.area_std;  
+EnvDat.Canopy_s = (EnvDat.canopy .- EnvDat.canopy_mean) ./ EnvDat.canopy_std;  
 EnvDat
 
 filter(:NG => x -> x != 1, EnvDat )
 
-a = combine(groupby(filter(:NG => x -> x != 1, EnvDat ), [:Location, :NK]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
+a = combine(groupby(filter(:NG => x -> x != 1, EnvDat ), [:Location, :NK]), [:Density_s, :Canopy_s] .=> [mean, mean] .=> [:Density, :Canopy])
 GupRecr = outerjoin(sGz, a, on = [:Location, :NK])
 
-a = combine(groupby(filter(:NK => x -> x != 1, EnvDat ), [:Location, :NG]), [:Density_s, :Area_s] .=> [mean, mean] .=> [:Density, :Area])
+a = combine(groupby(filter(:NK => x -> x != 1, EnvDat ), [:Location, :NG]), [:Density_s, :Canopy_s] .=> [mean, mean] .=> [:Density, :Canopy])
 KillRecr = outerjoin(sKz, a, on = [:Location, :NG])
 
 

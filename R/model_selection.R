@@ -8,7 +8,7 @@ rm(list=ls(all=TRUE))
 ###########################################################################################################
 # First get the data
 getwd()
-setwd("~/Dropbox/Jaime M/Projects_JM/FSU/Pool_manipulation/Pool_KG/")
+#setwd("~/Dropbox/Jaime M/Projects_JM/FSU/Pool_manipulation/Pool_KG/")
 source("R/Functions.R")
 
 center = 18
@@ -114,16 +114,26 @@ S2 <- brm(surv ~ z + z2 + NK + z:NK  + Density + canopy + (1|stream), family = b
 S3 <- brm(surv ~ z + NK + z:NK  + Density + canopy + (1|stream), family = bernoulli(), Gdata,
           iter = 2000, warmup = 1000, control = list(adapt_delta = 0.92, max_treedepth = 13))
 
+S4 <- brm(surv ~ z + NK + Density + canopy + (1|stream), family = bernoulli(), Gdata,
+          iter = 2000, warmup = 1000, control = list(adapt_delta = 0.92, max_treedepth = 13))
+
+S5 <- brm(surv ~ NK + Density + canopy + (1|stream), family = bernoulli(), Gdata,
+          iter = 2000, warmup = 1000, control = list(adapt_delta = 0.92, max_treedepth = 13))
+
+
 S1 <- add_criterion(S1, criterion = c("loo", "waic"))
 S2 <- add_criterion(S2, criterion = c("loo", "waic"))
 S3 <- add_criterion(S3, criterion = c("loo", "waic"))
+S4 <- add_criterion(S4, criterion = c("loo", "waic"))
+S5 <- add_criterion(S5, criterion = c("loo", "waic"))
 
-S2$model
-as.data.frame(loo_compare(S1,S2,S3, criterion = "loo"))
-loo_model_weights(S1,S2,S3, criterion = "loo")
 
-conditional_effects(S3, effects = 'z:NK')
-Survival_G = Model_selection(S3, name = "Survival", species = "Guppy")
+as.data.frame(loo_compare(S1,S2,S3,S4,S5, criterion = "loo"))
+loo_model_weights(S1,S2,S3,S4,S5, criterion = "loo")
+
+summary(S5)
+conditional_effects(S5, effects = 'NK')
+Survival_G = Model_selection(S5, name = "Survival", species = "Guppy")
 summary(Survival_G)
 post = data.frame(posterior_samples(Survival_G))
 
