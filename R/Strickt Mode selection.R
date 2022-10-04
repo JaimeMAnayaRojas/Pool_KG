@@ -131,7 +131,7 @@ summary(S4)
 postS = data.frame(posterior_samples(S4))
 
 
-Gdata$Treatment = ifelse(Gdata$NK == 1, "NK", "KG" ) 
+Gdata$Treatment = ifelse(Gdata$NK == 1, "KR", "KG" ) 
 KG = inv_logit_scaled(post$b_Intercept) *100
 NK = inv_logit_scaled(post$b_Intercept + post$b_NK) *100
 
@@ -182,12 +182,12 @@ NKs = cbind(apply(NKs, 2, mean),
 
 dfs = as.data.frame(rbind(NGs,NKs ))
 names(dfs) <- c("surv", "l95", "u95")
-dfs$Treatment = c(rep("KG", dim(NKs)[1]), rep("NK", dim(NKs)[1]))
+dfs$Treatment = c(rep("KG", dim(NKs)[1]), rep("KR", dim(NKs)[1]))
 dfs$z = c(size, size)
 
 names(dfs)
 
-Gdata$Treatment <- ifelse(Gdata$NK==1, "NK", "KG")
+Gdata$Treatment <- ifelse(Gdata$NK==1, "KR", "KG")
 
 splot = Gdata[,c("SL1_mm", "Treatment", "surv")]
 names(splot)[1] = "z"
@@ -264,11 +264,11 @@ NKg = cbind(apply(NKg, 2, mean),
 
 dfG = as.data.frame(rbind(KGg,NKg ))
 names(dfG) <- c("growth", "l95", "u95")
-dfG$Treatment = c(rep("KG", dim(KGg)[1]), rep("NK", dim(NKg)[1]))
+dfG$Treatment = c(rep("KG", dim(KGg)[1]), rep("KR", dim(NKg)[1]))
 dfG$z = c(size, size)
 
 dGpoints = subset(Gdata, surv == 1)
-dGpoints$Treatment = ifelse(dGpoints$NK==1, "NK", "KG")
+dGpoints$Treatment = ifelse(dGpoints$NK==1, "KR", "KG")
 dGpoints = dGpoints[,c("SL1_mm", "growth", "Treatment")]
 
 names(dGpoints)[1] = "z" 
@@ -356,11 +356,11 @@ NKr = cbind(apply(NKr, 2, mean),
 
 dfR = as.data.frame(rbind(KGr,NKr))
 names(dfR) <- c("Recr", "l95", "u95")
-dfR$Treatment = c(rep("KG", dim(KGr)[1]), rep("NK", dim(NKr)[1]))
+dfR$Treatment = c(rep("KG", dim(KGr)[1]), rep("KR", dim(NKr)[1]))
 dfR$z = c(size, size)
 
 dRpoints = subset(Gdata, surv == 1)
-dRpoints$Treatment = ifelse(dRpoints$NK==1, "NK", "KG")
+dRpoints$Treatment = ifelse(dRpoints$NK==1, "KR", "KG")
 dRpoints = dRpoints[,c("SL1_mm", "Recr", "Treatment")]
 
 names(dRpoints)[1] = "z" 

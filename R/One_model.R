@@ -352,6 +352,20 @@ svg("plots/PPRecproG.svg", width = 4, height = 4)
 ppR
 graphics.off()
 
+
+
+SumTabG <- rbind(summary(S1)$fixed, summary(G1)$fixed, summary(R1)$fixed)
+
+(SumTabG <- round(SumTabG, 3))
+
+write.csv(SumTabG, "outputs/Table-S3.csv")
+
+
+
+
+# make summary table for guppies here:
+
+
 ### Killifish 
 # Model Killifish ---------------------------------------------
 
@@ -359,7 +373,7 @@ KP_link= function(post,GR, size){
   z = size - 18
   z2 = (size^2) - 18^2
   
-  mu = post$b_Intercept + post$b_NG *GR + (post$b_z + post$`b_z:GR` * GR) * z + post$b_z2*z2
+  mu = post$b_Intercept + post$b_GR *GR + (post$b_z + post$`b_z:GR` * GR) * z + post$b_z2*z2
   
   return(mu)
   
@@ -407,12 +421,12 @@ KNGs = cbind(apply(KNGs, 2, mean),
 
 dfs = as.data.frame(rbind(KKGs,KNGs ))
 names(dfs) <- c("surv", "l95", "u95")
-dfs$Treatment = c(rep("KG", dim(KKGs)[1]), rep( "GR", dim(KNGs)[1]))
+dfs$Treatment = factor(c(rep("KG", dim(KKGs)[1]), rep( "GR", dim(KNGs)[1])), levels = c("KG", "GR"))
 dfs$z = c(size, size)
 
 names(dfs)
 
-Kdata$Treatment <- ifelse(Kdata$NG==1,  "GR", "KG")
+Kdata$Treatment <- factor(ifelse(Kdata$NG==1,  "GR", "KG"), levels = c("KG", "GR"))
 
 splot = Kdata[,c("SL1_mm", "Treatment", "surv")]
 names(splot)[1] = "z"
@@ -439,8 +453,8 @@ splot
 #----------- picewise regression
 
 
-bprior <-   prior(normal(0, 1), nlpar = "bz1") +
-  prior(normal(0, 1), nlpar = "bz2") +
+bprior <-   prior(normal(0, 2), nlpar = "bz1") +
+  prior(normal(0, 2), nlpar = "bz2") +
   prior(normal(20, 10), nlpar = "omega") + 
   prior(normal(0, 5), nlpar = "b0")
 
@@ -482,17 +496,17 @@ G2_linkK = function(post, z,GR){
   bz1= post$b_bz1_Intercept
   bz2= post$b_bz2_Intercept
   a= post$b_b0_Intercept
-  bNG= post$"b_b0_NG"
-  bz1NG= post$"b_bz1_NG"
-  bz2NG= post$"b_bz2_NG"
+  bGR= post$"b_b0_GR"
+  bz1GR= post$"b_bz1_GR"
+  bz2GR= post$"b_bz2_GR"
   w = post$b_omega_Intercept
   
   
   #  for(j in 1:length(u)){
   if(z < mean(w)){
-    u = a + bNG *GR + (bz1 + bz1NG *GR) * (z - w) # linear predictor
+    u = a + bGR *GR + (bz1 + bz1GR *GR) * (z - w) # linear predictor
   }else{
-    u = a + bNG*GR + (bz2 + bz2NG *GR) * (z - w) # linear predictor
+    u = a + bGR*GR + (bz2 + bz2GR *GR) * (z - w) # linear predictor
     #   }
   }
   
@@ -523,11 +537,15 @@ dfG = as.data.frame(rbind(KGg,NGg ))
 
 head(dfG)
 names(dfG) <- c("growth", "l95", "u95")
-dfG$Treatment = c(rep("KG", dim(KGg)[1]), rep( "GR", dim(NGg)[1]))
+dfG$Treatment = factor(c(rep("KG", dim(KGg)[1]), rep( "GR", dim(NGg)[1])), levels = c("KG", "GR"))
+
+levels(dfG$Treatment)
+
 dfG$z = c(size, size)
 
 dGpoints = subset(Kdata, surv == 1)
-dGpoints$Treatment = ifelse(dGpoints$NG==1,  "GR", "KG")
+dGpoints$Treatment = factor(ifelse(dGpoints$NG==1,  "GR", "KG"), levels = c("KG", "GR"))
+
 dGpoints = dGpoints[,c("SL1_mm", "growth", "Treatment")]
 
 names(dGpoints)[1] = "z" 
@@ -575,11 +593,11 @@ KNGr = cbind(apply(KNGr, 2, mean),
 dfR = as.data.frame(rbind(KKGr,KNGr))
 dim(dfR)
 names(dfR) <- c("Recr", "l95", "u95")
-dfR$Treatment = c(rep("KG", dim(KNGr)[1]), rep( "GR", dim(KNGr)[1]))
+dfR$Treatment = factor(c(rep("KG", dim(KNGr)[1]), rep( "GR", dim(KNGr)[1])), levels = c("KG", "GR"))
 dfR$z = c(size, size)
 
 dRpoints = subset(Kdata, surv == 1 & Recr >= 0 )
-dRpoints$Treatment = ifelse(dRpoints$NG==1,  "GR", "KG")
+dRpoints$Treatment = factor(ifelse(dRpoints$NG==1,  "GR", "KG"), levels = c("KG", "GR"))
 dRpoints = dRpoints[,c("SL1_mm", "Recr", "Treatment")]
 
 
@@ -599,6 +617,15 @@ names(dRpoints)[1] = "z"
 )
 
 
+
+##
+
+SumTabK <- rbind(summary(KS1)$fixed, summary(fit1)$fixed, summary(KR1)$fixed)
+
+(SumTabK <- round(SumTabK, 3))
+
+write.csv(SumTabK, "outputs/Table-S4.csv")
+
 ## Recruitment
 
 
@@ -614,7 +641,7 @@ RecrData$Pool = factor(RecrData$Pool, levels = c("KG", "KR",  "GR"))
 # get_prior(Recrt ~ 0 + Pool + (1|Location), family = negbinomial(), Data)
 
 
-priors2 = prior(normal(0,1), class = b, coef = PoolNK) + # +
+priors2 = prior(normal(0,1), class = b, coef = PoolKR) + # +
   prior(normal(3,0.2), class = Intercept) #+
 # prior(normal(3,0.5), class = b, coef = PoolNG) +
 # prior(normal(3,0.5), class = b, coef = PoolNK) 
@@ -622,6 +649,7 @@ priors2 = prior(normal(0,1), class = b, coef = PoolNK) + # +
 RectG = subset(RecrData, Sp=="Guppy")
 
 get_prior(Recrt ~ Pool + Density + Canopy , family = negbinomial(), RectG)
+
 mG <- brm( Recrt ~ Pool + Density + Canopy , family = negbinomial(), RectG, prior = priors2,
            iter = 2000, warmup = 1000, control = list(adapt_delta = 0.98, max_treedepth = 13))
 post_Recr = posterior_samples(mG)
@@ -632,7 +660,7 @@ t(rbind(apply(post_Recr, 2, mean),apply(post_Recr, 2, hdi),apply(post_Recr, 2, L
 conditional_effects(mG, effects = "Pool")
 
 KGrec = exp(post_Recr$b_Intercept)
-NKrec = exp(post_Recr$b_Intercept + post_Recr$b_PoolNK)
+NKrec = exp(post_Recr$b_Intercept + post_Recr$b_PoolKR)
 
 
 
@@ -640,7 +668,7 @@ RecrDF = as.data.frame(cbind(apply(cbind(KGrec,NKrec), 2, mean),
                              t(apply(cbind(KGrec,NKrec), 2, hdi, credMass=.95))[,1],
                              t(apply(cbind(KGrec,NKrec), 2, hdi, credMass=.95))[,2]))
 
-RecrDF$Pool <- c("KG", "KR")
+RecrDF$Pool <- factor(c("KG", "KR"), levels = c("KG", "KR"))
 names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
 
 RecrDF
@@ -655,6 +683,7 @@ pp = paste(round(pp,1),"%", sep = "")
 
 RecrData$Treatment =  RecrData$Pool
 levels(RecrData$Treatment) <- c("KG", "KR", "KG",  "GR")
+RecrData$Treatment = factor(RecrData$Treatment, levels = c("KG", "KR", "GR"))
 
 (plotD <- ggplot(RecrDF, aes(x=Pool, y=mean, colour = Pool)) + 
     geom_point(size = 4) + scale_color_manual(values=c("black", "orange")) +
@@ -677,10 +706,11 @@ levels(RecrData$Treatment) <- c("KG", "KR", "KG",  "GR")
 RectK = subset(RecrData, Sp=="Killifish")
 
 RectK$Treatment = factor(RectK$Pool)
+levels(RectK$Treatment)
 
 get_prior(Recrt ~ Pool + Density + Canopy , family = negbinomial(), RectK)
 
-priors3 = prior(normal(0,0.5), class = b, coef = PoolNG) + # +
+priors3 = prior(normal(0,0.5), class = b, coef = PoolGR) + # +
   prior(normal(2.5,0.5), class = Intercept) #+
 # prior(normal(3,0.5), class = b, coef = PoolNG) +
 # prior(normal(3,0.5), class = b, coef = PoolNK) 
@@ -697,7 +727,14 @@ t(rbind(apply(post_RecrK, 2, mean),apply(post_RecrK, 2, hdi),apply(post_RecrK, 2
 conditional_effects(mK, effects = "Pool")
 
 KKGrec = exp(post_RecrK$b_Intercept)
-KNGrec = exp(post_RecrK$b_Intercept + post_RecrK$b_PoolNG)
+KNGrec = exp(post_RecrK$b_Intercept + post_RecrK$b_PoolGR)
+
+
+SumTabRec <- rbind(summary(mG)$fixed, summary(mK)$fixed)
+
+(SumTabRec <- round(SumTabRec, 3))
+
+write.csv(SumTabRec, "outputs/Table-Recr.csv")
 
 
 
@@ -705,7 +742,8 @@ RecrDF = as.data.frame(cbind(apply(cbind(KKGrec,KNGrec), 2, mean),
                              t(apply(cbind(KKGrec,KNGrec), 2, hdi, credMass=.95))[,1],
                              t(apply(cbind(KKGrec,KNGrec), 2, hdi, credMass=.95))[,2]))
 
-RecrDF$Pool <- c("KG",  "GR")
+RecrDF$Pool <- factor(c("KG",  "GR"), levels = c("KG",  "GR"))
+
 names(RecrDF)[1:3] <- c("mean", "l95", "u95" )
 
 RecrDF

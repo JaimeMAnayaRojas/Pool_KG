@@ -12,6 +12,8 @@ using LaTeXStrings
 using KernelDensity
 
 
+
+
 # load my functions
 include("Functions.jl")
 readdir("outputs")
@@ -60,23 +62,41 @@ DataK = CSV.read("data/KillifishIPM.csv", DataFrame);
 
 
 a = filter(:KG => x -> x == 1, DataG)
-pSG = histogram(a.SL1_mm, label = "KG", bins= 50, alpha = 0.5, 
-title = "a) Guppy", titlefont = font(10), titleloc = :left)
+pSG1 = histogram(a.SL1_mm, label = "KG", bins= 20, alpha = 0.5, 
+title = "a)", titlefont = font(10), titleloc = :left)
 a = filter(:NK => x -> x == 1, DataG)
 histogram!(a.SL1_mm, label = "NK", bins= 50, alpha = 0.5)
+xlabel!("Guppy initial size (mm)")
+
 
 a = filter(:KG => x -> x == 1, DataK)
-pSK = histogram(a.SL1_mm, label = "KG", titlefont = font(10),  
-bins= 50, title = "b) Killifish", titleloc = :left, alpha = 0.5)
+pSK1 = histogram(a.SL1_mm, label = "KG", titlefont = font(10),  
+bins= 50, title = "c)", titleloc = :left, alpha = 0.5)
 a = filter(:NG => x -> x == 1, DataK)
-histogram!(a.SL1_mm, label = "NG",  bins= 50, alpha = 0.5)
+histogram!(a.SL1_mm, label = "NG",  bins= 50, alpha = 0.5,  c= :violet)
+xlabel!("Killifish initial size (mm)")
 
-plot(pSG, pSK, layout = (2,1))
-xlabel!("Size (mm)")
+a = filter(:KG => x -> x == 1, DataG)
+pSG2 = histogram(a.SL2_mm, label = "KG", bins= 20, alpha = 0.5, 
+title = "b)", titlefont = font(10), titleloc = :left)
+a = filter(:NK => x -> x == 1, DataG)
+histogram!(a.SL2_mm, legend = :false, bins= 50, alpha = 0.5)
+xlabel!("Guppy final size (mm)")
+
+a = filter(:KG => x -> x == 1, DataK)
+pSK2 = histogram(a.SL2_mm, label = "KG", titlefont = font(10),  
+bins= 50, title = "d)", titleloc = :left, alpha = 0.5)
+a = filter(:NG => x -> x == 1, DataK)
+histogram!(a.SL2_mm, legend = :false,  bins= 50, alpha = 0.5, c= :violet)
+xlabel!("Killifish final size (mm)")
+
+plot(pSG1, pSG2, pSK1, pSK2, layout = (2,2))
+
 ylabel!("Frequency (N)")
+xlims!(5,90)
+ylims!(0,30)
 
-
-
+savefig("plots/Figure-sizeStruc.svg")
 
 
 
@@ -123,10 +143,12 @@ end
 
 
 
-include("Figures_Guppy.jl");
+include("Figures_Guppy.jl")
 
 
 savefig("plots/Figure-1.svg")
+
+savefig("plots/Figure-1.pdf")
 savefig("plots/Figure-1.png")
 
 
@@ -134,3 +156,12 @@ include("Figures_Killifish.jl")
 savefig("plots/Figure-2.png")
 savefig("plots/Figure-2.svg")
 
+
+
+DataG.R2 .= 0
+
+
+names(DataG)
+DataG.R2[findall(DataG.Mark .== NaN)] .= 0
+
+DataG.R2[findall(DataG.SL2_mm .< 14.)] .= 0
