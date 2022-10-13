@@ -51,6 +51,7 @@ GN = combine(groupby(Gz, [:Location, :Pool_1]), :N .=> sum .=> :G)
 KN = combine(groupby(Kz, [:Location, :Pool_1]), :N .=> sum .=> :K)
 NDF = outerjoin(GN, KN, on = [:Location, :Pool_1])
 
+NDF
 # Number ratio
 
 NDF.ratio = NDF.K ./ NDF.G
